@@ -26,3 +26,9 @@ class TaskRead(TaskBase):  # Esquema para leer tareas
     fecha: datetime  # Fecha/hora asignada por la BD
 
     model_config = ConfigDict(from_attributes=True)  # Permite leer desde objetos ORM en Pydantic v2
+
+
+class TaskUpdate(BaseModel):  # Esquema para actualizar tareas parcialmente
+    titulo: Optional[str] = None  # Titulo opcional para actualizar
+    descripcion: Optional[str] = None  # Descripcion opcional para actualizar
+    estado: Optional[TaskStatus] = None  # Estado opcional para actualizar
