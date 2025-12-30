@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-12-2025 a las 19:19:26
+-- Tiempo de generación: 31-12-2025 a las 00:16:58
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -24,30 +24,49 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `alembic_version`
+--
+
+CREATE TABLE `alembic_version` (
+  `version_num` varchar(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+--
+-- Volcado de datos para la tabla `alembic_version`
+--
+
+INSERT INTO `alembic_version` (`version_num`) VALUES
+('f1a2b3c4d5e6');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `task`
 --
 
 CREATE TABLE `task` (
-  `id` int(255) NOT NULL,
-  `titulo` varchar(255) NOT NULL,
-  `descripcion` varchar(255) NOT NULL,
-  `estado` enum('pending','in_progress','done') NOT NULL,
-  `fecha` timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+  `id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `status` enum('pending','in_progress','done') NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `task`
 --
 
-INSERT INTO `task` (`id`, `titulo`, `descripcion`, `estado`, `fecha`) VALUES
-(4, 'string', 'string', 'pending', '2025-12-30 05:51:33.870721'),
-(5, 'string', 'string', 'pending', '2025-12-30 05:51:38.871499'),
-(6, 'string', 'string', 'pending', '2025-12-30 05:51:39.594462'),
-(7, 'string', 'string', 'pending', '2025-12-30 05:51:39.946210'),
-(8, 'string', 'string', 'pending', '2025-12-30 05:51:40.155361'),
-(9, 'string', 'string', 'pending', '2025-12-30 05:51:40.420417'),
-(10, 'string', 'string', 'pending', '2025-12-30 05:51:40.682247'),
-(11, 'COmer pollo', 'Comer pollo guisado', 'done', '2025-12-30 17:29:57.481349');
+INSERT INTO `task` (`id`, `title`, `description`, `status`, `created_at`) VALUES
+(1, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:12:00'),
+(2, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:13:36'),
+(3, 'caminar', 'caminar por el parque', 'in_progress', '2025-12-30 23:15:24'),
+(4, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:13:38'),
+(6, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:13:59'),
+(7, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:14:00'),
+(8, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:14:01'),
+(9, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:14:01'),
+(10, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:14:02'),
+(11, 'pollo frito', 'cocinar pollo frito', 'pending', '2025-12-30 23:14:03');
 
 -- --------------------------------------------------------
 
@@ -59,25 +78,32 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `hashed_password` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
 --
 -- Volcado de datos para la tabla `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `hashed_password`) VALUES
-(1, 'Isaac', '$2b$12$7GmsXIEi8drxbvRmLFqkpeI7mvLQ.6WKd8eafby9mUO7e9DqeiEq2'),
-(2, 'pollos', '$2b$12$IXTXHlg.vH9k1HdpnPo8oOOR0iOvFOFtKoV5xigNqtI6JhadvBAnW');
+(1, 'admin', '$2b$12$hq7QNlHnYMd8U3fbJyWq2ebiULubq3yEGWNOORILym10rCuTRPJrK');
 
 --
 -- Índices para tablas volcadas
 --
 
 --
+-- Indices de la tabla `alembic_version`
+--
+ALTER TABLE `alembic_version`
+  ADD PRIMARY KEY (`version_num`);
+
+--
 -- Indices de la tabla `task`
 --
 ALTER TABLE `task`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ix_task_id` (`id`),
+  ADD KEY `ix_task_status` (`status`);
 
 --
 -- Indices de la tabla `users`
@@ -95,13 +121,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `task`
 --
 ALTER TABLE `task`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

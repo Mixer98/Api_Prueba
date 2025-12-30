@@ -87,7 +87,7 @@ Crear tarea (requiere token):
 curl -X POST http://127.0.0.1:8000/tasks \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
-  -d '{"titulo":"Comprar pan","descripcion":"Integral","estado":"pending"}'
+  -d '{"title":"Comprar pan","description":"Integral","status":"pending"}'
 ```
 Listar con paginación:
 ```bash
@@ -95,7 +95,7 @@ curl "http://127.0.0.1:8000/tasks?page=1&page_size=5"
 ```
 
 ## Modelos
-- Task: `id`, `titulo`, `descripcion`, `estado`, `fecha` (timestamp), estados: `pending|in_progress|done`.
+- Task: `id`, `title`, `description`, `status`, `created_at` (timestamp), estados: `pending|in_progress|done`.
 - User: `id`, `username` (único), `hashed_password`.
 
 ## Errores esperados
@@ -123,7 +123,7 @@ curl "http://127.0.0.1:8000/tasks?page=1&page_size=5"
    curl -X POST http://127.0.0.1:8000/tasks \
      -H "Authorization: Bearer <tu_token>" \
      -H "Content-Type: application/json" \
-     -d '{"titulo":"Primera tarea","descripcion":"Test","estado":"pending"}'
+     -d '{"title":"Primera tarea","description":"Test","status":"pending"}'
    ```
 
 4. **Listar tareas** (no requiere token):
@@ -136,7 +136,7 @@ curl "http://127.0.0.1:8000/tasks?page=1&page_size=5"
    curl -X PUT http://127.0.0.1:8000/tasks/1 \
      -H "Authorization: Bearer <tu_token>" \
      -H "Content-Type: application/json" \
-     -d '{"estado":"done"}'
+     -d '{"status":"done"}'
    ```
 
 6. **Eliminar tarea** (requiere token):
@@ -158,7 +158,8 @@ Api de Prueba/
 ├── migrations/           # Carpeta de migraciones
 │   ├── env.py            # Config entorno Alembic
 │   └── versions/
-│       └── 888a89d773d4_create_users_and_tasks_tables.py
+│       ├── 888a89d773d4_create_users_and_tasks_tables.py
+│       └── f1a2b3c4d5e6_rename_task_columns_to_english.py
 └── README.md
 ```
 
@@ -176,7 +177,7 @@ Api de Prueba/
 - **JWT**: Tokens con expiración configurable (por defecto 30 min)
 - **Paginación**: Todos los listados incluyen metadata (total, páginas, etc.)
 - **Validación**: Username 3-50 chars, password 6-72 chars (límite bcrypt)
-- **Índices**: Se crearon índices en `id` y `username` para optimizar consultas
+- **Índices**: Índices en `task.id` y `task.status` (filtrado por estado) y en `users.username` (búsqueda única)
 - **Migraciones**: Revision ID `888a89d773d4` - El ID hexadecimal es generado por Alembic para control de versiones
 
 

@@ -12,9 +12,9 @@ class TaskStatus(str, Enum):  # Estados posibles de una tarea
 
 
 class TaskBase(BaseModel):  # Campos compartidos entre creacion y lectura
-    titulo: str  # Titulo obligatorio
-    descripcion: Optional[str] = None  # Descripcion opcional
-    estado: TaskStatus = TaskStatus.pending  # Estado con valor por defecto
+    title: str  # Titulo obligatorio
+    description: Optional[str] = None  # Descripcion opcional
+    status: TaskStatus = TaskStatus.pending  # Estado con valor por defecto
 
 
 class TaskCreate(TaskBase):  # Esquema para crear tareas
@@ -23,15 +23,15 @@ class TaskCreate(TaskBase):  # Esquema para crear tareas
 
 class TaskRead(TaskBase):  # Esquema para leer tareas
     id: int  # Identificador de la tarea
-    fecha: datetime  # Fecha/hora asignada por la BD
+    created_at: datetime  # Fecha/hora asignada por la BD
 
     model_config = ConfigDict(from_attributes=True)  # Permite leer desde objetos ORM en Pydantic v2
 
 
 class TaskUpdate(BaseModel):  # Esquema para actualizar tareas parcialmente
-    titulo: Optional[str] = None  # Titulo opcional para actualizar
-    descripcion: Optional[str] = None  # Descripcion opcional para actualizar
-    estado: Optional[TaskStatus] = None  # Estado opcional para actualizar
+    title: Optional[str] = None  # Titulo opcional para actualizar
+    description: Optional[str] = None  # Descripcion opcional para actualizar
+    status: Optional[TaskStatus] = None  # Estado opcional para actualizar
 
 
 class PaginatedTaskResponse(BaseModel):  # Esquema de respuesta paginada

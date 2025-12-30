@@ -16,10 +16,10 @@ class Task(Base):  # Modelo ORM que representa la tabla "task"
     __tablename__ = "task"  # Nombre de la tabla en la base de datos
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Clave primaria autoincremental
-    titulo = Column(String(255), nullable=False)  # Título obligatorio de la tarea
-    descripcion = Column(String(255))  # Descripción opcional
-    estado = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.pending)  # Estado usando la enumeración
-    fecha = Column(TIMESTAMP, nullable=False, server_default=func.current_timestamp(), onupdate=func.current_timestamp())  # Marca temporal de creación/actualización
+    title = Column(String(100), nullable=False)  # Título obligatorio de la tarea
+    description = Column(String(255))  # Descripción opcional
+    status = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.pending, index=True)  # Estado con índice para filtrado
+    created_at = Column(TIMESTAMP, nullable=False, server_default=func.current_timestamp(), onupdate=func.current_timestamp())  # Marca temporal de creación/actualización
 
 
 class User(Base):  # Modelo ORM que representa la tabla "users"
