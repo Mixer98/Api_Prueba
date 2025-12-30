@@ -5,10 +5,14 @@ CRUD de tareas con autenticación JWT.
 ## Requisitos
 - Python 3.11+ (usando venv)
 - Base de datos: MySQL local (actual) usando PyMySQL
+- XAMPP: activar el servicio MySQL (no es necesario Apache para la API)
+- SQL inicial: importar `api_database.sql` en tu MySQL (phpMyAdmin o consola) para crear la base y datos de arranque si aplica
 - Variables de entorno:
   - `SECRET_KEY` (obligatoria para JWT)
   - `ACCESS_TOKEN_EXPIRE_MINUTES` (opcional, por defecto 30)
   - `DATABASE_URL` (opcional; si no se define, usa la cadena en `database.py`)
+    - Formato MySQL: `mysql+pymysql://USER:PASSWORD@HOST:PORT/NOMBRE_BD`
+    - Ejemplo local (XAMPP): `mysql+pymysql://root:@localhost:3306/api_database`
 
 ## Instalación
 ```bash
