@@ -44,8 +44,8 @@ class PaginatedTaskResponse(BaseModel):  # Esquema de respuesta paginada
 
 # Schemas de autenticación
 class UserCreate(BaseModel):  # Esquema para registrar un nuevo usuario
-    username: constr(min_length=3, max_length=50)  # Nombre de usuario con longitud acotada
-    password: constr(min_length=6, max_length=72)  # Contraseña acotada para bcrypt (72 bytes máx)
+    username: constr(min_length=3, max_length=50)  # pyright: ignore[reportInvalidTypeForm] # Nombre de usuario con longitud acotada
+    password: constr(min_length=6, max_length=72)  # type: ignore # Contraseña acotada para bcrypt (72 bytes máx)
 
 
 class UserRead(BaseModel):  # Esquema para leer datos de usuario (sin contraseña)

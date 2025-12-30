@@ -1,4 +1,4 @@
-from typing import List  # Tipado para listas en las respuestas
+from typing import List  # Tipado para listas en las respuestas  # noqa: F401
 
 from fastapi import Depends, FastAPI, HTTPException  # Importa FastAPI y utilidades de dependencias/errores
 from fastapi.security import OAuth2PasswordRequestForm  # Para login via formulario x-www-form-urlencoded
