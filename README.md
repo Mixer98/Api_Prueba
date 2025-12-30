@@ -6,7 +6,6 @@ CRUD de tareas con autenticación JWT.
 - Python 3.11+ (usando venv)
 - Base de datos: MySQL local (actual) usando PyMySQL
 - XAMPP: activar el servicio MySQL (no es necesario Apache para la API)
-- SQL inicial: importar `api_database.sql` en tu MySQL (phpMyAdmin o consola) para crear la base y datos de arranque si aplica
 - Variables de entorno:
   - `SECRET_KEY` (obligatoria para JWT)
   - `ACCESS_TOKEN_EXPIRE_MINUTES` (opcional, por defecto 30)
@@ -19,6 +18,26 @@ CRUD de tareas con autenticación JWT.
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
+```
+
+## Migraciones (crear tablas automáticamente)
+**Opción 1: Usar Alembic (recomendado)**
+Las tablas se crean vía Alembic (migraciones):
+```bash
+alembic upgrade head
+```
+Esto ejecuta todas las migraciones pendientes y crea las tablas `users` y `tasks` en tu MySQL.
+
+Si necesitas crear una nueva migración (ej. agregar columna), usa:
+```bash
+alembic revision --autogenerate -m "descripción del cambio"
+alembic upgrade head
+```
+
+**Opción 2: Importar SQL manual**
+Si prefieres, puedes importar `api_database.sql` directamente en phpMyAdmin o consola MySQL:
+```bash
+mysql -u root api_database < api_database.sql
 ```
 
 ## Ejecutar
