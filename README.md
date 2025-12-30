@@ -3,7 +3,7 @@
 CRUD de tareas con autenticación JWT.
 
 ## Requisitos
-- Python 3.11+ (usando venv)
+- Python 3.14.2 (usando venv)
 - Base de datos: MySQL local (actual) usando PyMySQL
 - XAMPP: activar el servicio MySQL (no es necesario Apache para la API)
 - Variables de entorno:
