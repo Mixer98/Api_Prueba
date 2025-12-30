@@ -20,3 +20,11 @@ class Task(Base):  # Modelo ORM que representa la tabla "task"
     descripcion = Column(String(255))  # Descripción opcional
     estado = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.pending)  # Estado usando la enumeración
     fecha = Column(TIMESTAMP, nullable=False, server_default=func.current_timestamp(), onupdate=func.current_timestamp())  # Marca temporal de creación/actualización
+
+
+class User(Base):  # Modelo ORM que representa la tabla "users"
+    __tablename__ = "users"  # Nombre de la tabla en la base de datos
+
+    id = Column(Integer, primary_key=True, index=True)  # Clave primaria autoincremental
+    username = Column(String(50), unique=True, index=True, nullable=False)  # Nombre de usuario unico e indexado
+    hashed_password = Column(String(255), nullable=False)  # Contraseña hasheada (nunca en texto plano)

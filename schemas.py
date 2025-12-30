@@ -1,6 +1,6 @@
 from datetime import datetime  # Marca de tiempo de creacion/actualizacion
 from enum import Enum  # Enum base de Python
-from typing import Optional  # Tipado opcional para campos no requeridos
+from typing import List, Optional  # Tipado opcional para campos no requeridos y listas
 
 from pydantic import BaseModel, ConfigDict  # Base y configuracion para esquemas de validacion
 
@@ -32,3 +32,29 @@ class TaskUpdate(BaseModel):  # Esquema para actualizar tareas parcialmente
     titulo: Optional[str] = None  # Titulo opcional para actualizar
     descripcion: Optional[str] = None  # Descripcion opcional para actualizar
     estado: Optional[TaskStatus] = None  # Estado opcional para actualizar
+
+
+class PaginatedTaskResponse(BaseModel):  # Esquema de respuesta paginada
+    items: List[TaskRead]  # Lista de tareas en la pagina actual
+    total: int  # Total de tareas en la BD
+    page: int  # Numero de pagina actual
+    page_size: int  # Cantidad de items por pagina
+    total_pages: int  # Total de paginas disponibles
+
+
+# Schemas de autenticación
+class UserCreate(BaseModel):  # Esquema para registrar un nuevo usuario
+    username: str  # Nombre de usuario
+    password: str  # Contraseña en texto plano (se hasheará antes de guardar)
+
+
+class UserRead(BaseModel):  # Esquema para leer datos de usuario (sin contraseña)
+    id: int  # ID del usuario
+    username: str  # Nombre de usuario
+
+    model_config = ConfigDict(from_attributes=True)  # Permite leer desde objetos ORM
+
+
+class Token(BaseModel):  # Esquema de respuesta al hacer login
+    access_token: str  # Token JWT generado
+    token_type: str  # Tipo de token (siempre "bearer")
