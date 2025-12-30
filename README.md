@@ -46,6 +46,13 @@ uvicorn main:app --reload
 ```
 La API queda en `http://127.0.0.1:8000` y la documentación en `http://127.0.0.1:8000/docs`.
 
+## Usuario inicial
+Después de ejecutar las migraciones (`alembic upgrade head`), se crea automáticamente un usuario inicial:
+- **Username**: `admin`
+- **Password**: `admin123`
+
+Úsalo para autenticarte y probar los endpoints protegidos.
+
 ## Autenticación
 - Registro: `POST /auth/register` (JSON)
 - Login: `POST /auth/login` (form-data `username`, `password`)
@@ -95,5 +102,81 @@ curl "http://127.0.0.1:8000/tasks?page=1&page_size=5"
 - 401: sin token o credenciales inválidas.
 - 404: tarea no encontrada.
 - 422: validación (campos faltantes o longitud mínima/ máxima).
+
+## Prueba completa del flujo
+1. **Activa el venv y ejecuta la API**:
+   ```bash
+   .\venv\Scripts\Activate.ps1
+   uvicorn main:app --reload
+   ```
+
+2. **Autenticarse con el usuario admin**:
+   ```bash
+   curl -X POST http://127.0.0.1:8000/auth/login \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "username=admin&password=admin123"
+   ```
+   Guarda el `access_token` de la respuesta.
+
+3. **Crear una tarea** (usa el token):
+   ```bash
+   curl -X POST http://127.0.0.1:8000/tasks \
+     -H "Authorization: Bearer <tu_token>" \
+     -H "Content-Type: application/json" \
+     -d '{"titulo":"Primera tarea","descripcion":"Test","estado":"pending"}'
+   ```
+
+4. **Listar tareas** (no requiere token):
+   ```bash
+   curl http://127.0.0.1:8000/tasks?page=1&page_size=10
+   ```
+
+5. **Actualizar tarea** (requiere token):
+   ```bash
+   curl -X PUT http://127.0.0.1:8000/tasks/1 \
+     -H "Authorization: Bearer <tu_token>" \
+     -H "Content-Type: application/json" \
+     -d '{"estado":"done"}'
+   ```
+
+6. **Eliminar tarea** (requiere token):
+   ```bash
+   curl -X DELETE http://127.0.0.1:8000/tasks/1 \
+     -H "Authorization: Bearer <tu_token>"
+   ```
+
+## Estructura del proyecto
+```
+Api de Prueba/
+├── main.py               # Endpoints FastAPI
+├── auth.py               # Lógica JWT y hashing
+├── model.py              # Modelos SQLAlchemy
+├── schemas.py            # Schemas Pydantic
+├── database.py           # Conexión MySQL
+├── requirements.txt      # Dependencias
+├── alembic.ini           # Config Alembic
+├── migrations/           # Carpeta de migraciones
+│   ├── env.py            # Config entorno Alembic
+│   └── versions/
+│       └── 888a89d773d4_create_users_and_tasks_tables.py
+└── README.md
+```
+
+## Tecnologías usadas
+- **FastAPI**: Framework web moderno para APIs
+- **SQLAlchemy**: ORM para Python
+- **Alembic**: Sistema de migraciones de bases de datos
+- **PyMySQL**: Driver MySQL para Python
+- **Bcrypt**: Hashing seguro de contraseñas
+- **Python-Jose**: Manejo de tokens JWT
+- **Pydantic**: Validación de datos
+
+## Notas técnicas
+- **Contraseñas**: Hasheadas con bcrypt (factor 12)
+- **JWT**: Tokens con expiración configurable (por defecto 30 min)
+- **Paginación**: Todos los listados incluyen metadata (total, páginas, etc.)
+- **Validación**: Username 3-50 chars, password 6-72 chars (límite bcrypt)
+- **Índices**: Se crearon índices en `id` y `username` para optimizar consultas
+- **Migraciones**: Revision ID `888a89d773d4` - El ID hexadecimal es generado por Alembic para control de versiones
 
 
