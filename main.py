@@ -64,3 +64,14 @@ def update_task(
     db.commit()  # Confirma los cambios en la base
     db.refresh(task)  # Refresca la instancia con datos persistidos
     return task  # Devuelve la tarea actualizada
+
+
+@app.delete("/tasks/{task_id}", status_code=204)  # Ruta DELETE para eliminar una tarea
+def delete_task(task_id: int, db: Session = Depends(get_db)):  # Recibe el ID como parametro de ruta y la sesion
+    task = db.query(Task).filter(Task.id == task_id).first()  # Busca la tarea por ID
+
+    if not task:  # Si no existe la tarea
+        raise HTTPException(status_code=404, detail="Tarea no encontrada")  # Lanza error 404
+
+    db.delete(task)  # Marca la tarea para eliminar
+    db.commit()  # Confirma la eliminacion en la base
