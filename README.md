@@ -77,7 +77,4 @@ curl "http://127.0.0.1:8000/tasks?page=1&page_size=5"
 - 404: tarea no encontrada.
 - 422: validación (campos faltantes o longitud mínima/ máxima).
 
-## Pendientes / Limitaciones
-- DB actual: MySQL local; si se migra a PostgreSQL, ajustar `database.py` y `requirements.txt` (psycopg2/psycopg2-binary) y proveer `docker-compose.yml`.
-- Sin migraciones Alembic ni seed automático de usuario inicial.
-- Python 3.11 recomendado (la venv actual puede variar).
+
