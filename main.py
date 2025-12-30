@@ -1,4 +1,6 @@
-from fastapi import Depends, FastAPI, HTTPException  # Importa FastAPI y utilidades de dependencias/errores
+from typing import List  # Tipado para listas en las respuestas
+
+from fastapi import Depends, FastAPI  # Importa FastAPI y utilidades de dependencias
 from sqlalchemy.orm import Session  # Proporciona el tipo de sesion de SQLAlchemy
 
 from database import engine, get_db  # Engine de la base de datos y dependencia para obtener sesiones
@@ -29,3 +31,9 @@ def create_task(task: TaskCreate, db: Session = Depends(get_db)):  # Recibe dato
     db.commit()  # Confirma los cambios en la base
     db.refresh(db_task)  # Refresca la instancia con datos persistidos
     return db_task  # Devuelve la tarea creada
+
+
+@app.get("/tasks", response_model=List[TaskRead])  # Ruta GET para listar todas las tareas
+def list_tasks(db: Session = Depends(get_db)):  # Inyecta sesion de BD para la consulta
+    tasks = db.query(Task).all()  # Obtiene todas las tareas almacenadas
+    return tasks  # Devuelve la lista de tareas

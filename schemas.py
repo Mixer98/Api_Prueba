@@ -2,7 +2,7 @@ from datetime import datetime  # Marca de tiempo de creacion/actualizacion
 from enum import Enum  # Enum base de Python
 from typing import Optional  # Tipado opcional para campos no requeridos
 
-from pydantic import BaseModel  # Base para esquemas de validacion
+from pydantic import BaseModel, ConfigDict  # Base y configuracion para esquemas de validacion
 
 
 class TaskStatus(str, Enum):  # Estados posibles de una tarea
@@ -25,5 +25,4 @@ class TaskRead(TaskBase):  # Esquema para leer tareas
     id: int  # Identificador de la tarea
     fecha: datetime  # Fecha/hora asignada por la BD
 
-    class Config:  # Configuracion de Pydantic v1
-        orm_mode = True  # Permite leer desde objetos ORM
+    model_config = ConfigDict(from_attributes=True)  # Permite leer desde objetos ORM en Pydantic v2
