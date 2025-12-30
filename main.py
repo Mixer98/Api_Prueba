@@ -1,6 +1,7 @@
 from typing import List  # Tipado para listas en las respuestas
 
-from fastapi import Depends, FastAPI, HTTPException, Query  # Importa FastAPI y utilidades de dependencias/errores
+from fastapi import Depends, FastAPI, HTTPException  # Importa FastAPI y utilidades de dependencias/errores
+from fastapi.security import OAuth2PasswordRequestForm  # Para login via formulario x-www-form-urlencoded
 from sqlalchemy.orm import Session  # Proporciona el tipo de sesion de SQLAlchemy
 
 from database import engine, get_db  # Engine de la base de datos y dependencia para obtener sesiones
@@ -9,7 +10,10 @@ from schemas import (
     TaskCreate, TaskRead, TaskUpdate, PaginatedTaskResponse,  # Esquemas de tareas
     UserCreate, UserRead, Token  # Esquemas de autenticacion
 )
-from auth import hash_password, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES  # Funciones de autenticacion
+from auth import (
+    hash_password, verify_password, create_access_token, get_current_user,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)  # Funciones de autenticacion y dependencia de usuario actual
 from datetime import timedelta  # Para calcular expiracion del token
 
 
@@ -30,7 +34,11 @@ def root():  # Funcion que maneja la raiz
 
 
 @app.post("/tasks", response_model=TaskRead)  # Ruta POST para crear tareas
-def create_task(task: TaskCreate, db: Session = Depends(get_db)):  # Recibe datos validados y sesion inyectada
+def create_task(
+    task: TaskCreate,  # Datos validados de la tarea
+    db: Session = Depends(get_db),  # Sesion de BD
+    current_user: User = Depends(get_current_user)  # Requiere usuario autenticado
+):  # Crea una nueva tarea
     db_task = Task(**task.dict())  # Crea instancia ORM con los datos recibidos
     db.add(db_task)  # Agrega la tarea a la sesion
     db.commit()  # Confirma los cambios en la base
@@ -75,7 +83,8 @@ def get_task(task_id: int, db: Session = Depends(get_db)):  # Recibe el ID como 
 def update_task(
     task_id: int,  # ID de la tarea a actualizar
     task_data: TaskUpdate,  # Datos validados con campos opcionales
-    db: Session = Depends(get_db)  # Sesion de BD inyectada
+    db: Session = Depends(get_db),  # Sesion de BD inyectada
+    current_user: User = Depends(get_current_user),  # Requiere usuario autenticado
 ):  # Funcion que actualiza parcialmente una tarea
     task = db.query(Task).filter(Task.id == task_id).first()  # Busca la tarea por ID
 
@@ -91,7 +100,11 @@ def update_task(
 
 
 @app.delete("/tasks/{task_id}", status_code=204)  # Ruta DELETE para eliminar una tarea
-def delete_task(task_id: int, db: Session = Depends(get_db)):  # Recibe el ID como parametro de ruta y la sesion
+def delete_task(
+    task_id: int,  # ID de la tarea a eliminar
+    db: Session = Depends(get_db),  # Sesion de BD
+    current_user: User = Depends(get_current_user),  # Requiere usuario autenticado
+):  # Elimina una tarea existente
     task = db.query(Task).filter(Task.id == task_id).first()  # Busca la tarea por ID
 
     if not task:  # Si no existe la tarea
@@ -102,7 +115,7 @@ def delete_task(task_id: int, db: Session = Depends(get_db)):  # Recibe el ID co
 
 
 # Endpoints de autenticación
-@app.post("/register", response_model=UserRead, status_code=201)  # Ruta POST para registrar nuevo usuario
+@app.post("/auth/register", response_model=UserRead, status_code=201)  # Ruta POST para registrar nuevo usuario
 def register_user(user: UserCreate, db: Session = Depends(get_db)):  # Recibe datos de usuario y sesion
     """Crea un nuevo usuario con contraseña hasheada"""
     existing_user = db.query(User).filter(User.username == user.username).first()  # Verifica si el usuario ya existe
@@ -117,16 +130,16 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):  # Recibe da
     return db_user  # Retorna el usuario creado (sin contraseña)
 
 
-@app.post("/login", response_model=Token)  # Ruta POST para autenticar usuario
-def login(user: UserCreate, db: Session = Depends(get_db)):  # Recibe credenciales y sesion
+@app.post("/auth/login", response_model=Token)  # Ruta POST para autenticar usuario
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):  # Recibe credenciales via form-url-encoded
     """Autentica un usuario y retorna un token JWT"""
-    db_user = db.query(User).filter(User.username == user.username).first()  # Busca el usuario
+    db_user = db.query(User).filter(User.username == form_data.username).first()  # Busca el usuario
     if not db_user:  # Si no existe el usuario
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")  # Error 401
-    
-    if not verify_password(user.password, db_user.hashed_password):  # Verifica la contraseña
+
+    if not verify_password(form_data.password, db_user.hashed_password):  # Verifica la contraseña
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")  # Error 401
-    
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)  # Define tiempo de expiracion
     access_token = create_access_token(  # Crea el token JWT
         data={"sub": db_user.username},  # Payload con el username

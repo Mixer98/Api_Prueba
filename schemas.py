@@ -2,7 +2,7 @@ from datetime import datetime  # Marca de tiempo de creacion/actualizacion
 from enum import Enum  # Enum base de Python
 from typing import List, Optional  # Tipado opcional para campos no requeridos y listas
 
-from pydantic import BaseModel, ConfigDict  # Base y configuracion para esquemas de validacion
+from pydantic import BaseModel, ConfigDict, constr  # Base, configuracion y restricciones de campos
 
 
 class TaskStatus(str, Enum):  # Estados posibles de una tarea
@@ -44,8 +44,8 @@ class PaginatedTaskResponse(BaseModel):  # Esquema de respuesta paginada
 
 # Schemas de autenticación
 class UserCreate(BaseModel):  # Esquema para registrar un nuevo usuario
-    username: str  # Nombre de usuario
-    password: str  # Contraseña en texto plano (se hasheará antes de guardar)
+    username: constr(min_length=3, max_length=50)  # Nombre de usuario con longitud acotada
+    password: constr(min_length=6, max_length=72)  # Contraseña acotada para bcrypt (72 bytes máx)
 
 
 class UserRead(BaseModel):  # Esquema para leer datos de usuario (sin contraseña)
